@@ -1,135 +1,183 @@
-# =========================================================
-# 🎤 INTERFACES MULTIMODALES PRO
-# Control por Voz + MQTT + Diseño Mejorado
+# # =========================================================
+# 🎙️ CONTROL POR VOZ MQTT - VERSIÓN PRO BONITA Y LEGIBLE
+# Angie Style: Mejor contraste + interfaz limpia + sin espacios blancos feos
 # =========================================================
 
 import os
-import time
-import json
-import paho.mqtt.client as paho
 import streamlit as st
-from PIL import Image
 from bokeh.models import Button, CustomJS
 from streamlit_bokeh_events import streamlit_bokeh_events
+from PIL import Image
+import time
+import paho.mqtt.client as paho
+import json
 
-# ---------------- CONFIGURACIÓN ----------------
+# =========================================================
+# CONFIGURACIÓN STREAMLIT
+# =========================================================
 st.set_page_config(
     page_title="Control por Voz MQTT",
-    page_icon="🎙️",
+    page_icon="🎤",
     layout="centered",
     initial_sidebar_state="expanded"
 )
 
-# ---------------- ESTILOS ----------------
+# =========================================================
+# ESTILOS VISUALES PRO
+# =========================================================
 st.markdown("""
 <style>
+
+/* Fondo general */
 .stApp {
-    background: linear-gradient(to bottom, #EDE7FF, #D6C8FF);
+    background: linear-gradient(135deg, #d9c2ff, #f3e8ff);
+    color: #1f1f1f;
 }
 
-/* Título principal */
+/* Títulos */
 .main-title {
-    text-align: center;
-    font-size: 42px;
-    font-weight: bold;
-    color: #2E1065;
-    margin-bottom: 0;
+    text-align:center;
+    font-size:48px;
+    font-weight:900;
+    color:#2d1457;
+    margin-bottom:0px;
 }
 
-/* Subtítulo */
-.sub-title {
-    text-align: center;
-    font-size: 20px;
-    color: #4C1D95;
-    margin-top: 0;
-    margin-bottom: 25px;
+.subtitle {
+    text-align:center;
+    font-size:20px;
+    color:#4b2e83;
+    margin-top:0px;
+    margin-bottom:25px;
 }
 
-/* Tarjetas */
+/* Caja principal */
 .block-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
+    border-radius: 20px;
 }
 
-/* Texto normal */
-.big-text {
-    text-align: center;
+/* Sidebar */
+[data-testid="stSidebar"] {
+    background-color: #2d1457;
+}
+
+[data-testid="stSidebar"] * {
+    color: white !important;
+    font-weight: 600;
+}
+
+/* Botones */
+.stButton>button {
+    width: 100%;
+    border-radius: 15px;
+    background: linear-gradient(90deg, #6a0dad, #9b59b6);
+    color: white;
     font-size: 20px;
-    color: #1F2937;
-    font-weight: 500;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    transition: 0.3s;
+}
+
+.stButton>button:hover {
+    transform: scale(1.03);
+    background: linear-gradient(90deg, #4b0082, #8e44ad);
+}
+
+/* Texto */
+.big-text {
+    text-align:center;
+    font-size:22px;
+    font-weight:bold;
+    color:#2d1457;
 }
 
 /* Resultado */
 .result-box {
-    background-color: white;
-    padding: 15px;
-    border-radius: 15px;
-    border: 2px solid #8B5CF6;
-    color: #111827;
-    font-size: 22px;
-    font-weight: bold;
-    text-align: center;
+    background-color:#ffffffcc;
+    padding:20px;
+    border-radius:20px;
+    border: 3px solid #6a0dad;
+    color:#1f1f1f;
+    font-size:22px;
+    font-weight:bold;
+    text-align:center;
 }
 
-/* Sidebar */
-section[data-testid="stSidebar"] {
-    background-color: #F3E8FF;
+/* Elimina fondo blanco del componente Bokeh */
+iframe {
+    background: transparent !important;
 }
+
+/* Espaciado visual */
+div[data-testid="stVerticalBlock"] > div:has(iframe) {
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    display: flex;
+    justify-content: center;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- MQTT ----------------
+# =========================================================
+# MQTT CONFIG
+# =========================================================
 broker = "broker.mqttdashboard.com"
 port = 1883
 
 def on_publish(client, userdata, result):
     print("Dato publicado correctamente")
 
-client1 = paho.Client("AngieVoiceApp")
+client1 = paho.Client("GIT-HUBC")
 client1.on_publish = on_publish
 
-# ---------------- SIDEBAR ----------------
+# =========================================================
+# SIDEBAR
+# =========================================================
 with st.sidebar:
-    st.title("🛠️ Panel de Ayuda")
-    st.markdown("""
-### 📌 Instrucciones:
-1. Presiona **🎤 Escuchar**
-2. Habla claramente  
-3. La app enviará el comando al ESP32  
+    st.title("🛠️ Panel de Control")
+    st.markdown("### 📌 Instrucciones")
+    st.write("🎤 Presiona **ESCUCHAR**")
+    st.write("🗣️ Di comandos como:")
+    st.write("• enciende las luces")
+    st.write("• apaga las luces")
+    st.write("• abre la puerta")
+    st.write("• cierra la puerta")
+    st.markdown("---")
+    st.success("🌐 Broker conectado: mqttdashboard")
 
-### 🗣️ Ejemplos:
-- *enciende las luces* 💡  
-- *apaga las luces* 🌙  
-- *abre la puerta* 🚪  
-- *cierra la puerta* 🔒  
+# =========================================================
+# HEADER
+# =========================================================
+st.markdown('<div class="main-title">🎙️ CONTROL POR VOZ MQTT</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Habla y controla tu ESP32 de forma inteligente ✨</div>', unsafe_allow_html=True)
 
-### 🌐 Broker:
-`broker.mqttdashboard.com`
-
-### 📡 Topic:
-`voice_ctrl`
-""")
-
-# ---------------- HEADER ----------------
-st.markdown('<p class="main-title">🎙️ INTERFACES MULTIMODALES</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-title">Control inteligente por voz + MQTT</p>', unsafe_allow_html=True)
-
-# ---------------- IMAGEN ----------------
+# =========================================================
+# IMAGEN
+# =========================================================
 try:
     image = Image.open("voice_ctrl.jpg")
-    col1, col2, col3 = st.columns([1,2,1])
-
-    with col2:
-        st.image(image, use_container_width=True)
-
+    st.image(image, width=280)
 except:
-    st.info("📷 Agrega una imagen llamada 'voice_ctrl.jpg' para personalizar la interfaz.")
+    st.info("🖼️ Agrega una imagen llamada voice_ctrl.jpg para personalizar.")
 
-# ---------------- MENSAJE ----------------
-st.markdown('<p class="big-text">🎤 Presiona el botón y da una orden por voz</p>', unsafe_allow_html=True)
+# =========================================================
+# TEXTO
+# =========================================================
+st.markdown('<div class="big-text">🎤 Presiona el botón y habla claramente</div>', unsafe_allow_html=True)
 
-# ---------------- BOTÓN DE VOZ ----------------
-stt_button = Button(label="🎤 ESCUCHAR", width=250)
+# =========================================================
+# BOTÓN BOKEH SIN ESPACIO FEO
+# =========================================================
+stt_button = Button(
+    label="🎧 ESCUCHAR",
+    width=250,
+    height=60
+)
 
 stt_button.js_on_event("button_click", CustomJS(code="""
     var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -137,15 +185,15 @@ stt_button.js_on_event("button_click", CustomJS(code="""
 
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.lang = "es-ES";
+    recognition.lang = 'es-ES';
 
     recognition.onstart = function() {
-        document.dispatchEvent(new CustomEvent("LISTENING", {detail: "🎙️ Escuchando..."}));
+        document.dispatchEvent(new CustomEvent("STATUS", {detail: "🎙️ Escuchando..."}));
     };
 
     recognition.onresult = function(e) {
         var value = "";
-        for (var i = e.resultIndex; i < e.results.length; i++) {
+        for (var i = e.resultIndex; i < e.results.length; ++i) {
             if (e.results[i].isFinal) {
                 value += e.results[i][0].transcript;
             }
@@ -157,52 +205,60 @@ stt_button.js_on_event("button_click", CustomJS(code="""
     };
 
     recognition.onerror = function() {
-        document.dispatchEvent(new CustomEvent("GET_TEXT", {detail: "No se entendió el audio"}));
+        document.dispatchEvent(new CustomEvent("STATUS", {detail: "❌ Error de micrófono"}));
+    };
+
+    recognition.onend = function() {
+        document.dispatchEvent(new CustomEvent("STATUS", {detail: "✅ Grabación finalizada"}));
     };
 
     recognition.start();
 """))
 
-# ---------------- EVENTOS ----------------
+# =========================================================
+# EVENTOS
+# =========================================================
 result = streamlit_bokeh_events(
     stt_button,
-    events="GET_TEXT,LISTENING",
+    events="GET_TEXT,STATUS",
     key="listen",
     refresh_on_update=False,
-    override_height=100,
+    override_height=80,
     debounce_time=0
 )
 
-# ---------------- RESPUESTA ----------------
+# =========================================================
+# RESPUESTA
+# =========================================================
 if result:
 
-    if "LISTENING" in result:
-        st.warning("🎙️ Escuchando... Habla ahora")
+    if "STATUS" in result:
+        st.info(result["STATUS"])
 
     if "GET_TEXT" in result:
-
-        comando = result.get("GET_TEXT").strip()
+        comando = result.get("GET_TEXT").strip().lower()
 
         st.markdown(
-            f'<div class="result-box">🗣️ Orden detectada: {comando}</div>',
+            f'<div class="result-box">🗣️ Comando detectado:<br><br>“{comando}”</div>',
             unsafe_allow_html=True
         )
 
-        # Conectar y publicar
         try:
             client1.connect(broker, port)
 
             message = json.dumps({
-                "Act1": comando.lower()
+                "Act1": comando
             })
 
             client1.publish("voice_ctrl", message)
 
-            st.success("📡 Comando enviado correctamente al ESP32")
+            st.success("📡 Comando enviado al ESP32 correctamente")
 
         except Exception as e:
-            st.error(f"❌ Error MQTT: {e}")
+            st.error(f"❌ Error enviando MQTT: {e}")
 
-# ---------------- FOOTER ----------------
+# =========================================================
+# FOOTER
+# =========================================================
 st.markdown("---")
-st.caption("💜 Diseñado para Interfaces Multimodales | Voz + ESP32 + MQTT")
+st.caption("✨ Diseñado para Interfaces Multimodales | MQTT + Streamlit + ESP32")
